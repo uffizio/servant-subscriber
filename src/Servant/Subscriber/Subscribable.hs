@@ -10,6 +10,7 @@
 {-# LANGUAGE TypeFamilies          #-}
 {-# LANGUAGE TypeOperators         #-}
 {-# LANGUAGE UndecidableInstances  #-}
+{-# LANGUAGE TypeApplications      #-}
 
 
 
@@ -32,7 +33,6 @@ import           Servant.Foreign.Internal (_FunctionName)
 
 
 data Subscribable
-
 
 -- | You may use this type family to tell the type checker that your custom
 -- type may be skipped as part of a link. This is useful for things like
@@ -80,6 +80,9 @@ type family IsValidEndpoint endpoint :: Constraint where
 instance HasServer sublayout context => HasServer (Subscribable :> sublayout) context where
   type ServerT (Subscribable :> sublayout) m = ServerT sublayout m
   route _ = route (Proxy :: Proxy sublayout)
+
+  hoistServerWithContext _  = hoistServerWithContext (Proxy @sublayout)
+
 
 
 instance HasForeign lang ftype sublayout => HasForeign lang ftype (Subscribable :> sublayout) where
